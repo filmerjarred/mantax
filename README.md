@@ -7,6 +7,7 @@
 - we can then give each user a calibration score when looking at comments
 
 routes
+
 	- GET /user_scores?article={article-id}
 		- Gets all the scores for all the users who comment on this article, can use cloudflare workers to cache this json
 		- And then for any users that have commented since the scores were cached, we can get the delta and re-cache it
@@ -24,6 +25,7 @@ routes
 		- gives back their own history, along with current amount of mantax bucks they have to spend on predictions
 
 table
+
 	users
 		mantaxid
 		substack user id
