@@ -1,6 +1,6 @@
 # mantax
 
-- creates a prediction market to moderate comments by side loading a script through custom google tag manager
+- proof of concept for a prediction market to moderate comments by side loading a script through custom google tag manager
 
 - gets the substack user id + email + subscription id of current logged in user through window._preloads to create a "mantax id" which holds the predictions the logged in user makes
 
