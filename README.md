@@ -15,14 +15,14 @@ routes
 
 	- POST /predict
 		- Takes either the mantax id of the logged in user, or enough identifying information to make them a mantax account
-		- Makes a prediction abount whether a comment will be banned
+		- Makes a prediction about whether a comment will be banned
 
 	- POST /reconcile
-		- Will be a button on scotts dashboard
+		- Will be a button on scott's dashboard
 		- Gives the emails and userids of the subscription list + a list of bans to mantax server, which can then reconcile all predictions and update scores
 
 	- GET /user
-		- gives back their own history, along with current amount of mantax bucks they have to spend on predictions
+		- Gives back their own history, along with current amount of mantax bucks they have to spend on predictions
 
 table
 
