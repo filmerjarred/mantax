@@ -17,7 +17,8 @@ app.use(bodyParser.json());
 
 const MANTAX_COOKIE_KEY = 'mantaxUserId'
 
-const blogSlug = 'astralcodexten'
+const blogSlug = 'jarredfilmer'
+// const blogSlug = 'astralcodexten'
 
 app.post('/highlight', async (req, res) => {
 	try {
@@ -208,7 +209,6 @@ async function processBans (postId) {
 	if (error) throw error
 }
 
-processBans(39944722)
 
 // try {
 //   const requestSlug = this.props.slug;

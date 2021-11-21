@@ -1,14 +1,26 @@
-.vote-button {
+.vote-button, .reconcile-button{
 	background: none;
 	border:none;
 	vertical-align: text-bottom;
-	overflow: visible;
 	padding:0;
 	position:relative;
+	cursor: pointer;
+}
+
+.vote-button {
 	width:14px;
 	height:16px;
 	margin-left: 6px;
-	cursor: pointer;
+}
+
+.reconcile-button {
+	width:18px;
+	height:16px;
+}
+
+.big .reconcile-button {
+	width:24px;
+	height:19px;
 }
 
 #up-vote-button {

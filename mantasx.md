@@ -66,6 +66,7 @@ future potential features
 
    - using some kind of money (real or monopoly)
 
+   - add "predictions" count
 
 tooling I'm missing
    - types that translate into db

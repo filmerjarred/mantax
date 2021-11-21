@@ -1,4 +1,4 @@
-let highlightButtonHTML, banButtonHTML, scoreHTML, styleHTML
+let highlightButtonHTML, banButtonHTML, scoreHTML, styleHTML, reconcileButtonHTML
 let activeCommentActionMenu
 
 // const isAuthor = window._preload.is_author
@@ -14,12 +14,17 @@ async function go () {
 	highlightButtonHTML = await (await fetch('http://localhost:5000/predict-highlight-button')).text()
 	banButtonHTML = await (await fetch('http://localhost:5000/predict-ban-button')).text()
 	scoreHTML = await (await fetch('http://localhost:5000/score')).text()
+	reconcileButtonHTML = await (await fetch('http://localhost:5000/reconcile-button')).text()
 	styleHTML = await (await fetch('http://localhost:5000/style.css')).text()
 
-	// Inject css into page
+	// Inject our css into page
 	const styleTag = document.createElement('style')
 	styleTag.innerHTML = styleHTML
 	document.body.appendChild(styleTag)
+
+	// Inject "reconcile market" button onto any posts
+	const postMetaBlocks = document.querySelectorAll('.post-meta tr')
+	postMetaBlocks.forEach(decoratePostMetadata)
 
 	// Get comments
 	let comments
@@ -33,9 +38,7 @@ async function go () {
 		}, 200)
 	})
 
-	for (const comment of comments) {
-		decorateComment(comment)
-	}
+	comments.forEach(decorateComment)
 }
 
 function decorateComment(comment) {
@@ -95,6 +98,27 @@ function decorateComment(comment) {
 	}
 }
 
+function decoratePostMetadata(post) {
+	const reconcileButton = document.createElement('td')
+	const menuIcon = post.querySelector('.edit-icon')
+	if (menuIcon) {
+		post.insertBefore(reconcileButton, menuIcon)
+	} else {
+		post.appendChild(reconcileButton)
+	}
+	reconcileButton.outerHTML = reconcileButtonHTML
+
+	reconcileButton.addEventListener('click', () => {
+		await fetch('http://localhost:8080/reconcile', {
+			method: 'POST',
+			body: JSON.stringify(data),
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		})
+	})
+}
+
 // Lets the author mark a comment as highlighted
 async function markHighlighted({commentId, commenterUserId}) {
 	const data = {
@@ -133,6 +157,10 @@ async function makePrediction({predictedOutcome, commentId, commenterUserId}) {
 			'Content-Type': 'application/json'
 		 },
 	})
+}
+
+async function reconcilePost() {
+	
 }
 
 function identifyUser () {
