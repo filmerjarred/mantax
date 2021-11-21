@@ -16,21 +16,18 @@ mvp features
       - can't rely on window._preloads post being present
 
    - reconciliation
-      - route ✔
+      - reconcile route ✔
       - 🔥 add button to post, archive list, and front-page
          - only show if admin
 
-   - ✔ don't put predictions in for author
-
-   - ✔ don't put predictions in for author deleted comments 
 
    - ✔ prediction buttons for banning and highlighting 
       - make prediction idempotent
          - serverside
          - clientside (with ui indication)
-      
+      - ✔ don't put predictions in for author
+      - ✔ don't put predictions in for deleted comments 
       - error if it's too late / don't show the button
-
       - account for more comments loading
 
    - back button
@@ -44,8 +41,10 @@ mvp features
 
    - test it works on ASX using grease monkey
 
-   - page feedback
-      - mark on page if it's been reconciled / betting window closed
+   - show if buttons have been pressed
+      - reconcile
+      - highlight
+      - ban
 
    - displaying scores
       - feedback predictions user has made

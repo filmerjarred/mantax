@@ -16,6 +16,7 @@
 .reconcile-button {
 	width:18px;
 	height:15px;
+	margin-left:-4px
 }
 
 .big .reconcile-button {
