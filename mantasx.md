@@ -31,6 +31,8 @@ mvp features
 
       - account for more comments loading
 
+   - back button
+
    - Make ban detection work for subscriber only posts
       - Store cookie on server?
       - Send bans when author hits reconcile?
@@ -53,6 +55,8 @@ mvp features
       - private repository of all comments that have been predicted beyond a certain threshold
 
    - user authentication
+
+   - test performance with and without on mobile and such
 
 future potential features
    - auto-reconcile

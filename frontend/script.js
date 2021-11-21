@@ -98,7 +98,7 @@ function decorateComment(comment) {
 	}
 }
 
-function decoratePostMetadata(post) {
+async function decoratePostMetadata(post) {
 	const reconcileButton = document.createElement('td')
 	const menuIcon = post.querySelector('.edit-icon')
 	if (menuIcon) {
@@ -108,14 +108,35 @@ function decoratePostMetadata(post) {
 	}
 	reconcileButton.outerHTML = reconcileButtonHTML
 
-	reconcileButton.addEventListener('click', () => {
-		await fetch('http://localhost:8080/reconcile', {
-			method: 'POST',
-			body: JSON.stringify(data),
-			headers: {
-				'Content-Type': 'application/json'
-			},
-		})
+	let postId
+
+	// TODO if window._preloads.post, then use that
+
+	// if it's in the preloads, then use that
+
+	reconcileButton.addEventListener('click', async () => {
+		let postId
+		if (window._preloads.post) {
+			// If we're like, on a post then just use that
+			postId = window._preloads.post.id
+		} else {
+			const commentsLinkElement = post.querySelector('td a[href*="/comments"')
+			const postUrl = commentsLinkElement.replace(/\/comments$/, '')
+
+			if (window._preloads.newPosts) {
+				const newPost = window._preloads.newPosts.find(p => p.canonical_url === postUrl)
+				postId = newPost && newPost.id
+			}
+
+			// if we still haven't found it, use a ajax call to get it directly
+			if (!postId) {
+				const postSlug = postUrl.match(/\/p\/(.*)$/)[1]
+				const postStats = await (await fetch(`https://jarredfilmer.substack.com/api/v1/posts/${postSlug}`)).json()
+				postId = postStats.id
+			}
+		}
+
+		reconcilePost({postId})
 	})
 }
 
@@ -159,8 +180,21 @@ async function makePrediction({predictedOutcome, commentId, commenterUserId}) {
 	})
 }
 
-async function reconcilePost() {
-	
+async function reconcilePost({postId}) {
+	const data = {
+		reconcileInfo: {
+			substackPostId: postId
+		},
+		userInfo
+	}
+
+	await fetch('http://localhost:8080/reconcile', {
+		method: 'POST',
+		body: JSON.stringify(data),
+		headers: {
+			'Content-Type': 'application/json'
+		},
+	})
 }
 
 function identifyUser () {
