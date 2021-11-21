@@ -56,6 +56,8 @@ async function getOrCreateUser (req, res) {
 		user = await createUser(req.body.userInfo)
 		res.cookie(MANTAX_COOKIE_KEY, user.userId)
 	}
+
+	return user
 }
 
 app.post('/highlight', async (req, res) => {
