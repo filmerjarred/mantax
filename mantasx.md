@@ -18,6 +18,11 @@ mvp features
 
       - account for more comments loading
 
+   - will it work without the heart button there to append after?
+
+   - don't put the ban in for admin
+   - deleted comments look weird
+
    - record bans and highlights
       - check to see what comments were banned
       - scott can mark comment as highlighted

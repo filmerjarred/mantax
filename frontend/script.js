@@ -1,6 +1,11 @@
 let buttonHTML, scoreHTML, styleHTML, highlightOptionHTML
-
 let activeCommentActionMenu
+
+const userInfo = {
+	substackUserId: window._preloads.user.id,
+	email: window._preloads.user.email,
+	substackSubscriptionId: window._preloads.user.subscription_id
+}
 
 async function go () {
 	buttonHTML = await (await fetch('http://localhost:5000/buttons')).text()
@@ -60,45 +65,53 @@ function decorateComment(comment) {
 	}
 
 	// Inject upvote - downvote into page
-	const upVoteButton = commentActions.querySelector('#up-vote-button')
-	upVoteButton.addEventListener('click', () => makePrediction({prediction:'highlight', commentId, commenterUserId}))
-
-	const downVoteButton = commentActions.querySelector('#down-vote-button')
-	downVoteButton.addEventListener('click', () => makePrediction({prediction:'ban', commentId, commenterUserId}))
-
-	// todo: if admin
-	// Note: The dropdown html is outside the comment, so we have to track when a comment is clicked on ourselves, so we have access to the comment if if admin clicks highlight
-
-	const commentActionsDropdownSVG = commentActions.querySelector('.comment-actions')
+	const highlightButton = commentActions.querySelector('#highlight-button')
 	
+	if(!window._preloads.user.is_author) {
+		highlightButton.addEventListener('click', () => makePrediction({prediction:'highlight', commentId, commenterUserId}))
 
-	
-	const commentActionsDropdown = document.querySelector('.dropdown-menu-wrapper')
-	const highlightCommentAction = document.createElement('li')
-	commentActionsDropdown.appendChild(highlightCommentAction)
-	// highlightCommentAction.outerHTML = highlightOptionHTML
-
-
+		// Don't put ban button in for author
+		const banButton = commentActions.querySelector('#ban-button')
+		banButton.addEventListener('click', () => makePrediction({prediction:'ban', commentId, commenterUserId}))
+	} else {
+		highlightButton.addEventListener('click', () => markHighlighted({commentId, commenterUserId}))
+	}
 }
 
+// Lets the author mark a comment as highlighted
+async function markHighlighted({commentId, commenterUserId}) {
+	const data = {
+		highlightInfo: {
+			substackCommentId: commentId,
+			substackCommentUserId: commenterUserId,
+			substackPostId: window._preloads.post.id,
+		},
+		userInfo
+	}
+
+	await fetch('http://localhost:8080/highlight', {
+		method:'POST',
+		body: JSON.stringify(data),
+		headers: {
+			'Content-Type': 'application/json'
+		},
+	})
+}
 
 async function makePrediction({prediction, commentId, commenterUserId}) {
-		const data = {
+	const data = {
 		predictionInfo: {
 			prediction,
 			substackCommentId: commentId,
+			substackCommentUserId: commenterUserId,
 			substackPostId: window._preloads.post.id,
 		},
-		userInfo: {
-			substackUserId: window._preloads.user.id,
-			email: window._preloads.user.email,
-			substackSubscriptionId: window._preloads.user.subscription_id
-		}
+		userInfo
 	}
 
 	await fetch('http://localhost:8080/prediction', {
 		method:'POST',
-		body:JSON.stringify(data),
+		body: JSON.stringify(data),
 		headers: {
 			'Content-Type': 'application/json'
 		 },
