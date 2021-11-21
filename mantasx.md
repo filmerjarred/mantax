@@ -13,10 +13,12 @@ mvp features
       - ✔ author can mark comment as highlighted
       - ✔ trigger process to add ban outcomes 
       - make /highlight idempotent
+      - can't rely on window._preloads post being present
 
    - reconciliation
       - route ✔
       - 🔥 add button to post, archive list, and front-page
+         - only show if admin
 
    - ✔ don't put predictions in for author
 

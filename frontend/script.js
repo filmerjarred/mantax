@@ -114,14 +114,19 @@ async function decoratePostMetadata(post) {
 
 	// if it's in the preloads, then use that
 
-	reconcileButton.addEventListener('click', async () => {
+	// for some reason we need to re-select
+	post.querySelector('.reconcile-button').addEventListener('click', async (e) => {
+		if (e.stopImmediatePropagation) { e.stopImmediatePropagation(); }
+		if (e.stopPropagation) { e.stopPropagation(); }
+		e.preventDefault();
+
 		let postId
 		if (window._preloads.post) {
 			// If we're like, on a post then just use that
 			postId = window._preloads.post.id
 		} else {
 			const commentsLinkElement = post.querySelector('td a[href*="/comments"')
-			const postUrl = commentsLinkElement.replace(/\/comments$/, '')
+			const postUrl = commentsLinkElement.href.replace(/\/comments$/, '')
 
 			if (window._preloads.newPosts) {
 				const newPost = window._preloads.newPosts.find(p => p.canonical_url === postUrl)
