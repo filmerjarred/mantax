@@ -16,6 +16,8 @@ mvp features
       
       - error if it's too late / don't show the button
 
+      - account for more comments loading
+
    - record bans and highlights
       - check to see what comments were banned
       - scott can mark comment as highlighted
@@ -38,6 +40,10 @@ mvp features
    - user authentication
 
 future potential features
+   - auto-reconcile
+      - if banning or highlightin happens on a post
+         it starts a countdown mby?
+
    - user auth with auth0 and cloudflare
       - or mby just cloudflare?
 

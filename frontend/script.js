@@ -1,12 +1,14 @@
+let buttonHTML, scoreHTML, styleHTML, highlightOptionHTML
 
-let buttonHTML
-let scoreHTML
-console.log('alpha')
+let activeCommentActionMenu
+
 async function go () {
 	buttonHTML = await (await fetch('http://localhost:5000/buttons')).text()
 	scoreHTML = await (await fetch('http://localhost:5000/score')).text()
-	
-	const styleHTML = await (await fetch('http://localhost:5000/style.css')).text()
+	styleHTML = await (await fetch('http://localhost:5000/style.css')).text()
+	highlightOptionHTML = await (await fetch('http://localhost:5000/highlights')).text()
+
+	// Inject css into page
 	const styleTag = document.createElement('style')
 	styleTag.innerHTML = styleHTML
 	document.body.appendChild(styleTag)
@@ -28,7 +30,6 @@ async function go () {
 }
 
 function decorateComment(comment) {
-
 	// Append voting buttons to comment actions section
 	const commentActions = comment.querySelector('.comment-actions')
 	const likeButton = commentActions.querySelector('span:nth-child(2)')
@@ -58,22 +59,31 @@ function decorateComment(comment) {
 		return
 	}
 
+	// Inject upvote - downvote into page
 	const upVoteButton = commentActions.querySelector('#up-vote-button')
-	upVoteButton.addEventListener('click', () => {
-		console.log('click', commenterUserId, commentId)
-		makePrediction({prediction:'highlight', commentId, commenterUserId})
-	})
+	upVoteButton.addEventListener('click', () => makePrediction({prediction:'highlight', commentId, commenterUserId}))
 
 	const downVoteButton = commentActions.querySelector('#down-vote-button')
-	downVoteButton.addEventListener('click', () => {
-		console.log('click', commenterUserId, commentId)
-		makePrediction({prediction:'ban', commentId, commenterUserId})
-	})
+	downVoteButton.addEventListener('click', () => makePrediction({prediction:'ban', commentId, commenterUserId}))
+
+	// todo: if admin
+	// Note: The dropdown html is outside the comment, so we have to track when a comment is clicked on ourselves, so we have access to the comment if if admin clicks highlight
+
+	const commentActionsDropdownSVG = commentActions.querySelector('.comment-actions')
+	
+
+	
+	const commentActionsDropdown = document.querySelector('.dropdown-menu-wrapper')
+	const highlightCommentAction = document.createElement('li')
+	commentActionsDropdown.appendChild(highlightCommentAction)
+	// highlightCommentAction.outerHTML = highlightOptionHTML
+
+
 }
 
 
 async function makePrediction({prediction, commentId, commenterUserId}) {
-	const data = {
+		const data = {
 		predictionInfo: {
 			prediction,
 			substackCommentId: commentId,
