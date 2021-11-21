@@ -1,6 +1,4 @@
 todo
-   - confirm prime routes
-   - get them working locally with file db
    - reconciliation
    
    - get it working in cloudflare with supabase
@@ -11,19 +9,31 @@ todo
       - not at all
 
 mvp features
-   - prediction buttons for banning and highlighting
+   - ✔ prediction buttons for banning and highlighting 
+      - make prediction idempotent
+         - serverside
+         - clientside (with ui indication)
+      
+      - error if it's too late / don't show the button
 
-   - make prediction idempotent
+   - record bans and highlights
+      - check to see what comments were banned
+      - scott can mark comment as highlighted
 
-   - feedback predictions user has made
+   - reconciliation
+      - some process that goes through and checks to see who was right
 
-   - mark comment as highlighted
+   - page feedback
+      - mark on page if it's been reconciled / betting window closed
 
-   - public leaderboard
+   - displaying scores
+      - feedback predictions user has made
 
-   - public record for which comments have been banned or highlighted
+      - public leaderboard
 
-   - private repository of all comments that have been predicted beyond a certain threshold
+      - public record for which comments have been banned or highlighted
+
+      - private repository of all comments that have been predicted beyond a certain threshold
 
    - user authentication
 

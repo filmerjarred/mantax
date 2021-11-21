@@ -5,11 +5,17 @@
 	overflow: visible;
 	padding:0;
 	position:relative;
-	width:16px;
+	width:14px;
 	height:16px;
-	outline: 1px solid black;
+	margin-left: 6px;
+	cursor: pointer;
+}
+
+#up-vote-button {
+	width: 16px;
 }
 
 .vote-button svg {
-	color:#757575
+	color:#757575;
+	vertical-align: bottom;
 }

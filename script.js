@@ -59,13 +59,18 @@ function decorateComment(comment) {
 	}
 
 	const upVoteButton = commentActions.querySelector('#up-vote-button')
-	const downVoteButton = commentActions.querySelector('#down-vote-button')
-
 	upVoteButton.addEventListener('click', () => {
 		console.log('click', commenterUserId, commentId)
 		makePrediction({prediction:'highlight', commentId, commenterUserId})
 	})
+
+	const downVoteButton = commentActions.querySelector('#down-vote-button')
+	downVoteButton.addEventListener('click', () => {
+		console.log('click', commenterUserId, commentId)
+		makePrediction({prediction:'ban', commentId, commenterUserId})
+	})
 }
+
 
 async function makePrediction({prediction, commentId, commenterUserId}) {
 	const data = {
