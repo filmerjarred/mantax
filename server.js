@@ -62,21 +62,17 @@ async function getOrCreateUser (req, res) {
 
 app.post('/highlight', async (req, res) => {
 	try {
-		console.log('highlight!', req.body)
-
 		const user = await getOrCreateUser(req, res)
 
 		if (user.isAdmin) {
 			// Create outcome
-			const outcomeInfo = req.body.highlightInfo
+			const highlightInfo = req.body.highlightInfo
 			const outcome = {
 				outcomeId: uuid.v4(),
-				userId: user.userId,
-				type: 'highlight',
+				outcomeType: 'highlight',
 				substackCommentUserId: highlightInfo.substackCommentUserId,
 				substackCommentId: highlightInfo.substackCommentId,
 				substackPostId: highlightInfo.substackPostId,
-				highlight: highlightInfo.highlight
 			}
 
 			const { error: insertOutcomeError } = await supabase.from('outcomes').insert([outcome])
@@ -94,8 +90,6 @@ app.post('/highlight', async (req, res) => {
 
 app.post('/prediction', async (req, res) => {
 	try {
-		console.log('prediction!', req.body)
-
 		const user = await getOrCreateUser(req, res)
 		
 		// Create prediction
@@ -106,13 +100,62 @@ app.post('/prediction', async (req, res) => {
 			substackCommentUserId: predictionInfo.substackCommentUserId,
 			substackCommentId: predictionInfo.substackCommentId,
 			substackPostId: predictionInfo.substackPostId,
-			prediction: predictionInfo.prediction
+			predictedOutcome: predictionInfo.predictedOutcome,
+			predictionStatus: 'pending'
 		}
 
 		const { error: insertPredictionError } = await supabase
 			.from('predictions')
 			.insert([prediction])
 		if (insertPredictionError) throw insertPredictionError
+
+		res.end()
+	} catch(e) {
+		console.log(e)
+	}
+})
+
+app.post('/reconcile', async (req, res) => {
+	try {
+		const user = await getOrCreateUser(req, res)
+
+		const reconcileInfo = req.body.reconcileInfo
+		
+		// todo, this could be more efficiently joined in the db, rather than in server land
+
+		const {error: getPredictionsError, data: predictions} = await supabase
+			.from('predictions')
+			.select('*')
+			.eq('substackPostId', reconcileInfo.substackPostId)
+		if (getPredictionsError) throw getPredictionsError
+
+		// trigger process to load bans into outcomes
+
+		const {error: getOutcomesError, data: outcomes} = await supabase
+			.from('outcomes')
+			.select('outcomeId, createdAt, outcomeType, substackCommentId')
+			.eq('substackPostId', reconcileInfo.substackPostId)
+		if (getOutcomesError) throw getOutcomesError
+
+		const predictionUpdates = predictions.map(prediction => {
+			const outcome = outcomes.find(outcome => outcome.substackCommentId === prediction.substackCommentId)
+
+			// if there's no ban or highlight for comment
+			// or comment outcome does not match prediction:
+			// then prediction is wrong
+			const predictionStatus = outcome?.outcomeType !== prediction.predictedOutcome ? 'wrong' : 'correct'
+
+			return {
+				...prediction,
+				predictionStatus
+			}
+		})
+
+		// currently no way to do batch update with supabase orm
+		const {error: predictionUpdateError} = await supabase.from('predictions').upsert(predictionUpdates)
+		if (predictionUpdateError) throw predictionUpdateError
+
+		console.log('predictions reconciled', predictionUpdates)
 
 		res.end()
 	} catch(e) {

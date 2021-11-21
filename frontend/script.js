@@ -1,5 +1,8 @@
-let buttonHTML, scoreHTML, styleHTML, highlightOptionHTML
+let highlightButtonHTML, banButtonHTML, scoreHTML, styleHTML
 let activeCommentActionMenu
+
+// const isAuthor = window._preload.is_author
+const isAuthor = false
 
 const userInfo = {
 	substackUserId: window._preloads.user.id,
@@ -8,10 +11,10 @@ const userInfo = {
 }
 
 async function go () {
-	buttonHTML = await (await fetch('http://localhost:5000/buttons')).text()
+	highlightButtonHTML = await (await fetch('http://localhost:5000/predict-highlight-button')).text()
+	banButtonHTML = await (await fetch('http://localhost:5000/predict-ban-button')).text()
 	scoreHTML = await (await fetch('http://localhost:5000/score')).text()
 	styleHTML = await (await fetch('http://localhost:5000/style.css')).text()
-	highlightOptionHTML = await (await fetch('http://localhost:5000/highlights')).text()
 
 	// Inject css into page
 	const styleTag = document.createElement('style')
@@ -35,11 +38,25 @@ async function go () {
 }
 
 function decorateComment(comment) {
+	// Don't decorate deleted comments
+	const deletedText = comment.querySelector('.comment-body i')
+	if(deletedText && deletedText.textContent === 'deleted') return
+
 	// Append voting buttons to comment actions section
 	const commentActions = comment.querySelector('.comment-actions')
-	const likeButton = commentActions.querySelector('span:nth-child(2)')
 	const voteButtonsSpan = document.createElement('span')
-	commentActions.insertBefore(voteButtonsSpan, likeButton)
+	const replyButton = commentActions.querySelector('span:nth-child(2)')
+	
+	// Some blogs have the like button disabled
+	commentActions.insertBefore(voteButtonsSpan, replyButton)
+	
+	// remove prediction buttons if the user is the author
+	// but keep the highlight button as it serves double duty to let
+	// author mark comment as highlighted, as the context menu is a pain to alter
+	const buttonHTML = isAuthor ? 
+		highlightButtonHTML :
+		highlightButtonHTML + banButtonHTML 
+
 	voteButtonsSpan.outerHTML = buttonHTML
 
 	// Append score to comment header
@@ -67,14 +84,13 @@ function decorateComment(comment) {
 	// Inject upvote - downvote into page
 	const highlightButton = commentActions.querySelector('#highlight-button')
 	
-	if(!window._preloads.user.is_author) {
-		highlightButton.addEventListener('click', () => makePrediction({prediction:'highlight', commentId, commenterUserId}))
-
-		// Don't put ban button in for author
-		const banButton = commentActions.querySelector('#ban-button')
-		banButton.addEventListener('click', () => makePrediction({prediction:'ban', commentId, commenterUserId}))
-	} else {
+	if (isAuthor) {
 		highlightButton.addEventListener('click', () => markHighlighted({commentId, commenterUserId}))
+	} else {
+		highlightButton.addEventListener('click', () => makePrediction({predictedOutcome:'highlight', commentId, commenterUserId}))
+		
+		const banButton = commentActions.querySelector('#ban-button')
+		banButton.addEventListener('click', () => makePrediction({predictedOutcome:'ban', commentId, commenterUserId}))
 	}
 }
 
@@ -98,10 +114,10 @@ async function markHighlighted({commentId, commenterUserId}) {
 	})
 }
 
-async function makePrediction({prediction, commentId, commenterUserId}) {
+async function makePrediction({predictedOutcome, commentId, commenterUserId}) {
 	const data = {
 		predictionInfo: {
-			prediction,
+			predictedOutcome,
 			substackCommentId: commentId,
 			substackCommentUserId: commenterUserId,
 			substackPostId: window._preloads.post.id,

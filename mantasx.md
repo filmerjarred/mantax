@@ -9,6 +9,10 @@ todo
       - not at all
 
 mvp features
+   - ✔ don't put predictions in for author
+
+   - ✔ don't put predictions in for author deleted comments 
+
    - ✔ prediction buttons for banning and highlighting 
       - make prediction idempotent
          - serverside
@@ -18,17 +22,16 @@ mvp features
 
       - account for more comments loading
 
-   - will it work without the heart button there to append after?
-
-   - don't put the ban in for admin
-   - deleted comments look weird
+   - test it works on ASX using grease monkey
 
    - record bans and highlights
-      - check to see what comments were banned
-      - scott can mark comment as highlighted
+      - ✔ author can mark comment as highlighted
+      - trigger process to add ban outcomes
+      - make /highlight idempotent
 
    - reconciliation
-      - some process that goes through and checks to see who was right
+      - route ✔
+      - add button to post, archive list, and front-page
 
    - page feedback
       - mark on page if it's been reconciled / betting window closed
@@ -61,6 +64,8 @@ tooling I'm missing
    - types that translate into db
    - typechecking (runtime and designtime)
    - eslint
+   - make a column change in 1 place and have it update everywhere
+      - refactor providers for all usage locations
 
 noodling
    okay
