@@ -24,9 +24,10 @@ async function go () {
 	// Get comments
 	let comments
 	await new Promise(resolve => {
-		setInterval(() => {
+		const interval = setInterval(() => {
 			comments = document.querySelectorAll('.comment')
 			if(comments.length) {
+				clearInterval(interval)
 				resolve()
 			}
 		}, 200)

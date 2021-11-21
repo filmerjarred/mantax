@@ -6,6 +6,7 @@ const uuid = require('uuid')
 const express = require('express')
 const bodyParser = require('body-parser')
 const {createClient} = require('@supabase/supabase-js')
+const superagent = require('superagent')
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
 
@@ -16,49 +17,7 @@ app.use(bodyParser.json());
 
 const MANTAX_COOKIE_KEY = 'mantaxUserId'
 
-// assumes the existence of req.userInfo
-async function getOrCreateUser (req, res) {
-	const userQuery = supabase
-		.from('mantaxUsers')
-		.select(`userId, substackUserId, substackSubscriptionId, email, isAdmin`)
-
-	const cookieUserId = req.cookies ? req.cookies[MANTAX_COOKIE_KEY] : null
-
-	if (cookieUserId) {
-		console.log('mantaxUserId', cookieUserId)
-		userQuery.eq('userId', cookieUserId)
-	} else {
-		const userInfo = req.body.userInfo
-		console.log('userInfo', userInfo)
-		userQuery
-			.eq('substackUserId', userInfo.substackUserId)
-			.eq('substackSubscriptionId', userInfo.substackSubscriptionId)
-			.eq('email', userInfo.email)
-	}
-
-	// Get user
-	const { data: existingUsers, error: getUserError } = await userQuery
-	if (getUserError) throw getUserError
-
-	const existingUser = existingUsers[0]
-	console.log(existingUser)
-		
-	if (existingUsers.length > 1) throw new Error('More than one user match')
-	if (cookieUserId && existingUsers.length === 0) {
-		throw new Error('Could not find match for mantax user id')
-	}
-
-	// Create user if none exists
-	let user
-	if(existingUser) {
-		user = existingUser
-	} else {
-		user = await createUser(req.body.userInfo)
-		res.cookie(MANTAX_COOKIE_KEY, user.userId)
-	}
-
-	return user
-}
+const blogSlug = 'astralcodexten'
 
 app.post('/highlight', async (req, res) => {
 	try {
@@ -129,7 +88,8 @@ app.post('/reconcile', async (req, res) => {
 			.eq('substackPostId', reconcileInfo.substackPostId)
 		if (getPredictionsError) throw getPredictionsError
 
-		// trigger process to load bans into outcomes
+		// Go look at the article and reconcile any bans
+		await processBans(req.body.reconcileInfo.substackPostId)
 
 		const {error: getOutcomesError, data: outcomes} = await supabase
 			.from('outcomes')
@@ -163,6 +123,49 @@ app.post('/reconcile', async (req, res) => {
 	}
 })
 
+async function getOrCreateUser (req, res) {
+	const userQuery = supabase
+		.from('mantaxUsers')
+		.select(`userId, substackUserId, substackSubscriptionId, email, isAdmin`)
+
+	const cookieUserId = req.cookies ? req.cookies[MANTAX_COOKIE_KEY] : null
+
+	if (cookieUserId) {
+		console.log('mantaxUserId', cookieUserId)
+		userQuery.eq('userId', cookieUserId)
+	} else {
+		const userInfo = req.body.userInfo
+		console.log('userInfo', userInfo)
+		userQuery
+			.eq('substackUserId', userInfo.substackUserId)
+			.eq('substackSubscriptionId', userInfo.substackSubscriptionId)
+			.eq('email', userInfo.email)
+	}
+
+	// Get user
+	const { data: existingUsers, error: getUserError } = await userQuery
+	if (getUserError) throw getUserError
+
+	const existingUser = existingUsers[0]
+	console.log(existingUser)
+		
+	if (existingUsers.length > 1) throw new Error('More than one user match')
+	if (cookieUserId && existingUsers.length === 0) {
+		throw new Error('Could not find match for mantax user id')
+	}
+
+	// Create user if none exists
+	let user
+	if(existingUser) {
+		user = existingUser
+	} else {
+		user = await createUser(req.body.userInfo)
+		res.cookie(MANTAX_COOKIE_KEY, user.userId)
+	}
+
+	return user
+}
+
 async function createUser(userInfo) {
 	console.log('Creating user')
 
@@ -180,6 +183,63 @@ async function createUser(userInfo) {
 	
 	return user
 }
+
+async function processBans (postId) {
+	// Comments come back to us in a tree
+	const response = await superagent(`https://${blogSlug}.substack.com/api/v1/post/${postId}/comments?token=&all_comments=true&sort=oldest_first`)
+
+	// If no comments, stop here
+	if(_.isEmpty(response.body) || !response.body.comments.length) return
+
+	const unrollBans = comment => [...comment.bans, ...comment.children.flatMap(unrollBans)]
+	const bans = response.body.comments.flatMap(unrollBans)
+
+	const outcomes = bans.map(ban => ({
+		outcomeId: uuid.v4(),
+		outcomeType: 'ban',
+		substackCommentUserId: ban.user_id,
+		substackCommentId: ban.comment_id,
+		substackPostId: postId,
+	}))
+
+	console.log(`Inserting ${outcomes.length} bans`)
+
+	const {error} = await supabase.from('outcomes').insert(outcomes)
+	if (error) throw error
+}
+
+processBans(39944722)
+
+// try {
+//   const requestSlug = this.props.slug;
+//   const requestSort = this.state.sort;
+
+//   const query = {
+// 	 token: this.props.post_reaction_token || '',
+// 	 all_comments: true,
+// 	 sort: requestSort,
+// 	 last_comment_at: lastCommentAt,
+//   };
+
+//   if (this.state.post && this.props.commentId) {
+// 	 query.comment_id = this.props.commentId;
+//   }
+
+//   const res = await request
+// 	 .get(this.state.post ? `/api/v1/post/${this.state.post.id}/comments` : `/api/v1/posts/${requestSlug}`)
+// 	 .query(query);
+//   if (requestSlug !== this.props.slug || requestSort !== this.state.sort) {
+// 	 return;
+//   }
+// let lastCommentAt;
+// if (this.state.comments) {
+//   lastCommentAt = null;
+//   forEachComment(this.state.comments, (comment) => {
+// 	 if (!comment.deleted && comment.date && (!lastCommentAt || comment.date > lastCommentAt)) {
+// 		lastCommentAt = comment.date;
+// 	 }
+//   });
+// }
 
 app.listen(8080, () => {
 	console.log('Listening on port 8080')

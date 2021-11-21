@@ -9,6 +9,15 @@ todo
       - not at all
 
 mvp features
+   - record bans and highlights
+      - ✔ author can mark comment as highlighted
+      - ✔ trigger process to add ban outcomes 
+      - make /highlight idempotent
+
+   - reconciliation
+      - route ✔
+      - 🔥 add button to post, archive list, and front-page
+
    - ✔ don't put predictions in for author
 
    - ✔ don't put predictions in for author deleted comments 
@@ -22,16 +31,14 @@ mvp features
 
       - account for more comments loading
 
+   - Make ban detection work for subscriber only posts
+      - Store cookie on server?
+      - Send bans when author hits reconcile?
+
+   - make idempotent stored procs for these inserts and updates
+      - or maybe just use the substack ids as primary keys and do upserts?
+
    - test it works on ASX using grease monkey
-
-   - record bans and highlights
-      - ✔ author can mark comment as highlighted
-      - trigger process to add ban outcomes
-      - make /highlight idempotent
-
-   - reconciliation
-      - route ✔
-      - add button to post, archive list, and front-page
 
    - page feedback
       - mark on page if it's been reconciled / betting window closed
