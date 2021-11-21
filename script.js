@@ -1,9 +1,15 @@
+
 let buttonHTML
 let scoreHTML
-
+console.log('alpha')
 async function go () {
 	buttonHTML = await (await fetch('http://localhost:5000/buttons')).text()
 	scoreHTML = await (await fetch('http://localhost:5000/score')).text()
+	
+	const styleHTML = await (await fetch('http://localhost:5000/style.css')).text()
+	const styleTag = document.createElement('style')
+	styleTag.innerHTML = styleHTML
+	document.body.appendChild(styleTag)
 
 	// Get comments
 	let comments
@@ -22,10 +28,12 @@ async function go () {
 }
 
 function decorateComment(comment) {
+
 	// Append voting buttons to comment actions section
 	const commentActions = comment.querySelector('.comment-actions')
+	const likeButton = commentActions.querySelector('span:nth-child(2)')
 	const voteButtonsSpan = document.createElement('span')
-	commentActions.prepend(voteButtonsSpan)
+	commentActions.insertBefore(voteButtonsSpan, likeButton)
 	voteButtonsSpan.outerHTML = buttonHTML
 
 	// Append score to comment header
@@ -55,24 +63,27 @@ function decorateComment(comment) {
 
 	upVoteButton.addEventListener('click', () => {
 		console.log('click', commenterUserId, commentId)
-		makePrediction({direction:'up', commentId, commenterUserId})
+		makePrediction({prediction:'highlight', commentId, commenterUserId})
 	})
 }
 
-async function makePrediction({direction, commentId, commenterUserId}) {
-	const prediction = {
-		direction,
-		commentId,
-		commenterUserId,
-
-		substackUserId: window._preloads.user.id,
-		email: window._preloads.user.email,
-		substackSubscriptionId: window._preloads.user.subscription_id
+async function makePrediction({prediction, commentId, commenterUserId}) {
+	const data = {
+		predictionInfo: {
+			prediction,
+			substackCommentId: commentId,
+			substackPostId: window._preloads.post.id,
+		},
+		userInfo: {
+			substackUserId: window._preloads.user.id,
+			email: window._preloads.user.email,
+			substackSubscriptionId: window._preloads.user.subscription_id
+		}
 	}
 
 	await fetch('http://localhost:8080/prediction', {
 		method:'POST',
-		body:JSON.stringify(prediction),
+		body:JSON.stringify(data),
 		headers: {
 			'Content-Type': 'application/json'
 		 },

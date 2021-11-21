@@ -1,0 +1,15 @@
+.vote-button {
+	background: none;
+	border:none;
+	vertical-align: text-bottom;
+	overflow: visible;
+	padding:0;
+	position:relative;
+	width:16px;
+	height:16px;
+	outline: 1px solid black;
+}
+
+.vote-button svg {
+	color:#757575
+}
