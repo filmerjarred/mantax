@@ -135,13 +135,13 @@ app.post('/user-data', async (req, res) => {
 	if (getPredictionsError) throw error
 
 	// TODO: Index and cache
-	const {error: getPredictionsError, data: predictions} = await supabase
+	const {error: getOutcomesError, data: outcomes} = await supabase
 		.from('outcomes')
 		.select('*')
 		.eq('substackPostId', req.body.substackPostId)
-	if (getPredictionsError) throw error
+	if (getOutcomesError) throw error
 
-	res.json({predictions})
+	res.json({predictions, outcomes})
 
 	// get reconciliations
 
