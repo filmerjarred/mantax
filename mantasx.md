@@ -17,7 +17,7 @@ mvp features
 
    - reconciliation
       - ✔ reconcile route 
-      - 🔥 add button to post, archive list, and front-page
+      - ✔ add button to post, archive list, and front-page
          - ✔ only show if admin
 
 
@@ -30,7 +30,7 @@ mvp features
       - error if it's too late / don't show the button
       - account for more comments loading
 
-   - back button
+   - back button and navigation
 
    - Make ban detection work for subscriber only posts
       - Store cookie on server?

@@ -1,5 +1,5 @@
 let highlightButtonHTML, banButtonHTML, scoreHTML, styleHTML, reconcileButtonHTML
-let activeCommentActionMenu
+let mantaxData
 
 const urlParams = new URLSearchParams(window.location.search);
 const isAuthor = urlParams.get('is_author') === 'false' ? false : window._preloads.user.is_author
@@ -11,6 +11,8 @@ const userInfo = {
 }
 
 async function go () {
+	mantaxData = await getUserData()
+
 	highlightButtonHTML = await (await fetch('http://localhost:5000/predict-highlight-button')).text()
 	banButtonHTML = await (await fetch('http://localhost:5000/predict-ban-button')).text()
 	scoreHTML = await (await fetch('http://localhost:5000/score')).text()
@@ -90,14 +92,22 @@ function decorateComment(comment) {
 	// Inject upvote - downvote into page
 	const highlightButton = commentActions.querySelector('#highlight-button')
 	
-	if (isAuthor) {
-		highlightButton.addEventListener('click', () => markHighlighted({commentId, commenterUserId}))
+	const existingPrediction = mantaxData.predictions.find(p => p.substackCommentId === commentId)
+	if (existingPrediction) {
+		highlightButton.classList.add('highlighted')
 	} else {
-		highlightButton.addEventListener('click', () => makePrediction({predictedOutcome:'highlight', commentId, commenterUserId}))
-		
-		const banButton = commentActions.querySelector('#ban-button')
-		banButton.addEventListener('click', () => makePrediction({predictedOutcome:'ban', commentId, commenterUserId}))
+		highlightButton.addEventListener('click', () => highlightButton.classList.add('highlighted'))
+
+		if (isAuthor) {
+			highlightButton.addEventListener('click', () => markHighlighted({commentId, commenterUserId}))
+		} else {
+			highlightButton.addEventListener('click', () => makePrediction({predictedOutcome:'highlight', commentId, commenterUserId}))
+			
+			const banButton = commentActions.querySelector('#ban-button')
+			banButton.addEventListener('click', () => makePrediction({predictedOutcome:'ban', commentId, commenterUserId}))
+		}
 	}
+
 }
 
 async function decoratePostMetadata(post) {
@@ -204,11 +214,19 @@ async function reconcilePost({postId}) {
 	})
 }
 
-function identifyUser () {
-	// look for the mantax cookie to identify the user, if cannot find then:
-	// get the user id, email, and subscription id for the current logged in user (stripe id if we could get it too?)
+async function getUserData() {
+	const response = await fetch('http://localhost:8080/user-data', {
+		method: 'POST',
+		body: JSON.stringify({
+			userInfo,
+			substackPostId: window._preloads.post.id,
+		}),
+		headers: {
+			'Content-Type': 'application/json'
+		},
+	})
 
+	return response.json()
 }
-
 console.clear()
 go()

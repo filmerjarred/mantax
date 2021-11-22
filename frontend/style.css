@@ -32,3 +32,18 @@
 	color:#757575;
 	vertical-align: bottom;
 }
+
+/* Mechanism to highlight star */
+#highlight-button .empty-star {
+	display: block;
+}
+#highlight-button .full-star {
+	display: none;
+}
+#highlight-button.highlighted .empty-star {
+	display: none;
+}
+#highlight-button.highlighted .full-star {
+	display: block;
+	color:gold
+}

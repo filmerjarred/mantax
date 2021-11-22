@@ -124,6 +124,29 @@ app.post('/reconcile', async (req, res) => {
 	}
 })
 
+app.post('/user-data', async (req, res) => {
+	const user = await getOrCreateUser(req, res)
+
+	// TODO: Index and cache
+	const {error: getPredictionsError, data: predictions} = await supabase
+		.from('predictions')
+		.select('*')
+		.eq('userId', user.userId)
+	if (getPredictionsError) throw error
+
+	// TODO: Index and cache
+	const {error: getPredictionsError, data: predictions} = await supabase
+		.from('outcomes')
+		.select('*')
+		.eq('substackPostId', req.body.substackPostId)
+	if (getPredictionsError) throw error
+
+	res.json({predictions})
+
+	// get reconciliations
+
+})
+
 async function getOrCreateUser (req, res) {
 	const userQuery = supabase
 		.from('mantaxUsers')
