@@ -1,8 +1,8 @@
 let highlightButtonHTML, banButtonHTML, scoreHTML, styleHTML, reconcileButtonHTML
 let activeCommentActionMenu
 
-// const isAuthor = window._preload.is_author
-const isAuthor = false
+const urlParams = new URLSearchParams(window.location.search);
+const isAuthor = urlParams.get('is_author') === 'false' ? false : window._preloads.user.is_author
 
 const userInfo = {
 	substackUserId: window._preloads.user.id,
@@ -23,8 +23,10 @@ async function go () {
 	document.body.appendChild(styleTag)
 
 	// Inject "reconcile market" button onto any posts
-	const postMetaBlocks = document.querySelectorAll('.post-meta tr')
-	postMetaBlocks.forEach(decoratePostMetadata)
+	if (isAuthor) {
+		const postMetaBlocks = document.querySelectorAll('.post-meta tr')
+		postMetaBlocks.forEach(decoratePostMetadata)
+	}
 
 	// Get comments
 	let comments

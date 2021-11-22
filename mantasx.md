@@ -16,9 +16,9 @@ mvp features
       - can't rely on window._preloads post being present
 
    - reconciliation
-      - reconcile route ✔
+      - ✔ reconcile route 
       - 🔥 add button to post, archive list, and front-page
-         - only show if admin
+         - ✔ only show if admin
 
 
    - ✔ prediction buttons for banning and highlighting 
