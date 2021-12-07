@@ -7,12 +7,27 @@
 	cursor: pointer;
 }
 
-.vote-button {
-	width:14px;
-	height:16px;
-	margin-left: 6px;
+.vote-button svg {
+	color:#757575;
+	vertical-align: bottom;
 }
 
+/* highlight and ban proportions */
+#highlight-button {
+	width: 21px;
+	height: 16px;
+	margin-left: 5px;
+	top: -1px;
+	color: #757575eb
+}
+
+#ban-button {
+	width: 18px;
+	height: 16px;
+	margin-left: 8px;
+}
+
+/* reconcile */
 .reconcile-button {
 	width:18px;
 	height:15px;
@@ -22,15 +37,6 @@
 .big .reconcile-button {
 	width:24px;
 	height:19px;
-}
-
-#highlight-button {
-	width: 16px;
-}
-
-.vote-button svg {
-	color:#757575;
-	vertical-align: bottom;
 }
 
 /* Mechanism to highlight star */

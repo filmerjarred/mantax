@@ -233,37 +233,6 @@ async function processBans (postId) {
 }
 
 
-// try {
-//   const requestSlug = this.props.slug;
-//   const requestSort = this.state.sort;
-
-//   const query = {
-// 	 token: this.props.post_reaction_token || '',
-// 	 all_comments: true,
-// 	 sort: requestSort,
-// 	 last_comment_at: lastCommentAt,
-//   };
-
-//   if (this.state.post && this.props.commentId) {
-// 	 query.comment_id = this.props.commentId;
-//   }
-
-//   const res = await request
-// 	 .get(this.state.post ? `/api/v1/post/${this.state.post.id}/comments` : `/api/v1/posts/${requestSlug}`)
-// 	 .query(query);
-//   if (requestSlug !== this.props.slug || requestSort !== this.state.sort) {
-// 	 return;
-//   }
-// let lastCommentAt;
-// if (this.state.comments) {
-//   lastCommentAt = null;
-//   forEachComment(this.state.comments, (comment) => {
-// 	 if (!comment.deleted && comment.date && (!lastCommentAt || comment.date > lastCommentAt)) {
-// 		lastCommentAt = comment.date;
-// 	 }
-//   });
-// }
-
 app.listen(8080, () => {
 	console.log('Listening on port 8080')
 })

@@ -66,6 +66,9 @@ future potential features
 
    - have a plan for the selectors breaking
       - getting alerted, etc
+      - have a function to get elements you expect to be present
+      - expect certain text to be in it
+      - get alerted if the page changes meaningfully
 
    - user auth with auth0 and cloudflare
       - or mby just cloudflare?

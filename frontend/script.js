@@ -53,10 +53,10 @@ function decorateComment(comment) {
 	// Append voting buttons to comment actions section
 	const commentActions = comment.querySelector('.comment-actions')
 	const voteButtonsSpan = document.createElement('span')
-	const replyButton = commentActions.querySelector('span:nth-child(2)')
+	const replyButton = commentActions.querySelector('.comment-actions > span:nth-child(2)')
 	
 	// Some blogs have the like button disabled
-	commentActions.insertBefore(voteButtonsSpan, replyButton)
+	commentActions.prepend(voteButtonsSpan)
 	
 	// remove prediction buttons if the user is the author
 	// but keep the highlight button as it serves double duty to let
@@ -157,7 +157,6 @@ async function decoratePostMetadata(post) {
 	})
 }
 
-// Lets the author mark a comment as highlighted
 async function markHighlighted({commentId, commenterUserId}) {
 	const data = {
 		highlightInfo: {
@@ -229,5 +228,5 @@ async function getUserData() {
 	return response.json()
 }
 
-// console.clear()
-// go()
+console.clear()
+go()
