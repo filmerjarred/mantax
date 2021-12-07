@@ -1,8 +1,16 @@
 let highlightButtonHTML, banButtonHTML, scoreHTML, styleHTML, reconcileButtonHTML
 let mantaxData
 
+console.log(window.module)
+console.log(window.require)
+console.log(window.exports)
+
+import('react')
+
 const urlParams = new URLSearchParams(window.location.search);
 const isAuthor = urlParams.get('is_author') === 'false' ? false : window._preloads.user.is_author
+
+
 
 const userInfo = {
 	substackUserId: window._preloads.user.id,
