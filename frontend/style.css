@@ -1,5 +1,6 @@
 .prediction-button-wrapper {
-	float:left
+	float: left;
+	margin-right: 10px
 }
 
 .vote-button, .reconcile-button{
@@ -19,14 +20,15 @@
 #highlight-button {
 	width: 21px;
 	height: 16px;
-	color: #757575eb
+	color: #757575eb;
+	margin-top: -5px;
 }
 
 #ban-button {
 	width: 18px;
 	height: 17px;
 	margin-left: 5px;
-	margin-bottom: -1px;
+	margin-top: -2px;
 }
 
 /* reconcile */
