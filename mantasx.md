@@ -64,6 +64,9 @@ future potential features
       - if banning or highlightin happens on a post
          it starts a countdown mby?
 
+   - have a plan for the selectors breaking
+      - getting alerted, etc
+
    - user auth with auth0 and cloudflare
       - or mby just cloudflare?
 

@@ -228,5 +228,6 @@ async function getUserData() {
 
 	return response.json()
 }
-console.clear()
-go()
+
+// console.clear()
+// go()
