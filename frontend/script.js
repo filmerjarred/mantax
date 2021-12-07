@@ -4,6 +4,12 @@ let mantaxData
 const urlParams = new URLSearchParams(window.location.search);
 const isAuthor = urlParams.get('is_author') === 'false' ? false : window._preloads.user.is_author
 
+// todo: throttle
+
+new MutationObserver(function(mutations, observer) {
+	console.log(mutations) 
+	
+}).observe(document.body, {subtree:true, childList:true});
 
 // add mutation observer to see if comment is added
 // add mutation observer after page loaded
