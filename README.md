@@ -15,3 +15,7 @@ mvp todo
 - display leader board
 
 - admin only view of comments with high prediction variance
+
+
+
+https://stackoverflow.com/questions/31659567/performance-of-mutationobserver-to-detect-nodes-in-entire-dom/39332340#39332340

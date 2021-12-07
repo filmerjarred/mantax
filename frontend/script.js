@@ -1,16 +1,21 @@
 let highlightButtonHTML, banButtonHTML, scoreHTML, styleHTML, reconcileButtonHTML
 let mantaxData
 
-console.log(window.module)
-console.log(window.require)
-console.log(window.exports)
-
-import('preact')
-
 const urlParams = new URLSearchParams(window.location.search);
 const isAuthor = urlParams.get('is_author') === 'false' ? false : window._preloads.user.is_author
 
 
+// add mutation observer to see if comment is added
+// add mutation observer after page loaded
+	// 
+
+
+// re-run on pop-state
+// add mutation observer to see if parent-list get's bonked
+
+// add mutation observer to each comment
+
+// 1 mutation observer to see if 
 
 const userInfo = {
 	substackUserId: window._preloads.user.id,
@@ -59,12 +64,10 @@ function decorateComment(comment) {
 	if(deletedText && deletedText.textContent === 'deleted') return
 
 	// Append voting buttons to comment actions section
-	const commentActions = comment.querySelector('.comment-actions')
+	const commentRest = comment.querySelector('.comment-rest')
+	const commentActions = commentRest.querySelector('.comment-actions')
 	const voteButtonsSpan = document.createElement('span')
-	const replyButton = commentActions.querySelector('.comment-actions > span:nth-child(2)')
-	
-	// Some blogs have the like button disabled
-	commentActions.prepend(voteButtonsSpan)
+	commentRest.insertBefore(voteButtonsSpan, commentActions)
 	
 	// remove prediction buttons if the user is the author
 	// but keep the highlight button as it serves double duty to let
@@ -73,7 +76,7 @@ function decorateComment(comment) {
 		highlightButtonHTML :
 		highlightButtonHTML + banButtonHTML 
 
-	voteButtonsSpan.outerHTML = buttonHTML
+	voteButtonsSpan.outerHTML = `<span class='prediction-button-wrapper'>${buttonHTML}</span>`
 
 	// Append score to comment header
 	const commentMeta = comment.querySelector('.comment-meta')
@@ -98,7 +101,7 @@ function decorateComment(comment) {
 	}
 
 	// Inject upvote - downvote into page
-	const highlightButton = commentActions.querySelector('#highlight-button')
+	const highlightButton = commentRest.querySelector('#highlight-button')
 	
 	const existingPrediction = mantaxData.predictions.find(p => p.substackCommentId === commentId)
 	if (existingPrediction) {
@@ -111,7 +114,7 @@ function decorateComment(comment) {
 		} else {
 			highlightButton.addEventListener('click', () => makePrediction({predictedOutcome:'highlight', commentId, commenterUserId}))
 			
-			const banButton = commentActions.querySelector('#ban-button')
+			const banButton = commentRest.querySelector('#ban-button')
 			banButton.addEventListener('click', () => makePrediction({predictedOutcome:'ban', commentId, commenterUserId}))
 		}
 	}
