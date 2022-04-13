@@ -1,4 +1,4 @@
-let highlightButtonHTML, banButtonHTML, scoreHTML, styleHTML, reconcileButtonHTML
+let predictHighlightHTML, predictBanHTML, scoreHTML, styleHTML, reconcileButtonHTML
 let mantaxData
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -38,8 +38,9 @@ const userInfo = {
 async function go () {
 	mantaxData = await getUserData()
 
-	highlightButtonHTML = await (await fetch('http://localhost:5000/predict-highlight-button')).text()
-	banButtonHTML = await (await fetch('http://localhost:5000/predict-ban-button')).text()
+	predictHighlightHTML = await (await fetch('http://localhost:5000/predict-highlight-menu-item')).text()
+	predictBanHTML = await (await fetch('http://localhost:5000/predict-ban-menu-item')).text()
+	
 	scoreHTML = await (await fetch('http://localhost:5000/score')).text()
 	reconcileButtonHTML = await (await fetch('http://localhost:5000/reconcile-button')).text()
 	styleHTML = await (await fetch('http://localhost:5000/style.css')).text()
@@ -55,17 +56,6 @@ async function go () {
 		postMetaBlocks.forEach(decoratePostMetadata)
 	}
 
-	await new Promise(resolve => {
-		const interval = setInterval(() => {
-			if(document.querySelectorAll('.comment').length) {
-				clearInterval(interval)
-				resolve()
-			}
-		}, 200)
-	})
-
-	decorateComments()
-
 	document.addEventListener('click', (e) => {
 		if(e.target.classList.contains('comment-actions-menu')) {
 			onActionDropdownClick(e.target)
@@ -73,7 +63,7 @@ async function go () {
 	})
 }
 
-function onActionDropdownClick (actionsDropdown) {
+async function onActionDropdownClick (actionsDropdown) {
 	// get info
 	// wait for the dropdown
 	// inject the biz
@@ -107,118 +97,49 @@ function onActionDropdownClick (actionsDropdown) {
 		return
 	}
 
+	const dropdownMenu = await waitForElm('ul.dropdown-menu.tooltip.comment-actions-dropdown.active .dropdown-menu-wrapper')
 
-	const dropdownMenu = await waitForElm('.ul.dropdown-menu.tooltip.comment-actions-dropdown.active')
+	// Append voting buttons to comment actions section
+	const predictHighlight = document.createElement('li')
+	dropdownMenu.appendChild(predictHighlight)
+	predictHighlight.innerHTML = predictHighlightHTML
+		
+	const existingPrediction = mantaxData.predictions.find(p => p.substackCommentId === commentId)
+	if (existingPrediction) {
+		predictHighlight.classList.add('highlighted')
+	} else {
+		predictHighlight.addEventListener('click', () => predictHighlight.classList.add('highlighted'))
 
-	console.log(comment)
+		if (isAuthor) {
+			predictHighlight.addEventListener('click', () => markHighlighted({commentId, commenterUserId}))
+		} else {
+			predictHighlight.addEventListener('click', () => makePrediction({predictedOutcome:'highlight', commentId, commenterUserId}))
+			
+			// const banButton = commentRest.querySelector('#ban-button')
+			// banButton.addEventListener('click', () => makePrediction({predictedOutcome:'ban', commentId, commenterUserId}))
+		}
+	}
 }
 
 function waitForElm(selector) {
 	return new Promise(resolve => {
-		 if (document.querySelector(selector)) {
-			  return resolve(document.querySelector(selector));
-		 }
+		const observer = new MutationObserver(mutations => {
+			if (document.querySelector(selector)) {
+				resolve(document.querySelector(selector));
+				observer.disconnect();
+			}
+		});
 
-		 const observer = new MutationObserver(mutations => {
-			  if (document.querySelector(selector)) {
-					resolve(document.querySelector(selector));
-					observer.disconnect();
-			  }
-		 });
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true,
+			attributes:true
+		});
 
-		 observer.observe(document.body, {
-			  childList: true,
-			  subtree: true
-		 });
+		if (document.querySelector(selector)) {
+			return resolve(document.querySelector(selector));
+	  	}
 	});
-}
-
-function decorateComments() {
-	const comments = document.querySelectorAll('.comment')
-	comments.forEach(decorateComment)
-}
-
-function decorateComment(comment) {
-	// Don't decorate already decorated node
-	if(comment._decorated) return
-	comment._decorated = true
-
-	// Don't decorate deleted comments
-	const deletedText = comment.querySelector('.comment-body i')
-	if(deletedText && deletedText.textContent === 'deleted') return
-
-	// Don't decorate deleted nodes
-	if(!document.body.contains(comment)) return
-
-	const commentRest = comment.querySelector('.comment-rest')
-	const commentActions = commentRest.querySelector('.comment-actions')
-
-	// Append voting buttons to comment actions section
-	const predictButtonsSpan = document.createElement('span')
-	commentRest.insertBefore(predictButtonsSpan, commentActions)
-	
-	// remove prediction buttons if the user is the author
-	// but keep the highlight button as it serves double duty to let
-	// author mark comment as highlighted, as the context menu is a pain to alter
-	const buttonHTML = isAuthor ? 
-		highlightButtonHTML :
-		highlightButtonHTML + banButtonHTML 
-
-	predictButtonsSpan.innerHTML = buttonHTML
-	predictButtonsSpan.classList = 'prediction-button-wrapper'
-
-	new MutationObserver((mutations) => {
-		if (!commentRest.children.length === 4) throw new Error('Unexpected')
-
-		if (commentRest.children[2] !== predictButtonsSpan) {
-			console.log('redraw')
-			predictButtonsSpan.remove()
-			commentRest.insertBefore(predictButtonsSpan, commentRest.querySelector('.comment-actions'))
-		}
-
-	}).observe(commentRest, {childList:true})
-
-	// Append score to comment header
-	const commentMeta = comment.querySelector('.comment-meta')
-	const scoreSpan = document.createElement('span')
-	commentMeta.insertBefore(scoreSpan, commentMeta.lastElementChild)
-	scoreSpan.outerHTML = scoreHTML
-
-	// Get commentId
-	const commentAnchor = comment.querySelector('.comment-anchor').id
-	const commentId = commentAnchor.match(/comment-(\d*)/)[1]
-	if(!commentId){
-		console.error(`Could not find comment id in: "${comment.innerHTML}"`)
-		return
-	}
-
-	// Extract userId from comment
-	const profileLink = comment.querySelector('.user-head a').href
-	const commenterUserId = profileLink.match(/\/profile\/(\d*)-/)[1]
-	if(!commenterUserId){
-		console.error(`Could not find user id in comment: "${comment.innerHTML}"`)
-		return
-	}
-
-	// Inject upvote - downvote into page
-	const highlightButton = commentRest.querySelector('#highlight-button')
-	
-	const existingPrediction = mantaxData.predictions.find(p => p.substackCommentId === commentId)
-	if (existingPrediction) {
-		highlightButton.classList.add('highlighted')
-	} else {
-		highlightButton.addEventListener('click', () => highlightButton.classList.add('highlighted'))
-
-		if (isAuthor) {
-			highlightButton.addEventListener('click', () => markHighlighted({commentId, commenterUserId}))
-		} else {
-			highlightButton.addEventListener('click', () => makePrediction({predictedOutcome:'highlight', commentId, commenterUserId}))
-			
-			const banButton = commentRest.querySelector('#ban-button')
-			banButton.addEventListener('click', () => makePrediction({predictedOutcome:'ban', commentId, commenterUserId}))
-		}
-	}
-
 }
 
 async function decoratePostMetadata(post) {
