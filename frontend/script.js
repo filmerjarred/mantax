@@ -65,9 +65,72 @@ async function go () {
 	})
 
 	decorateComments()
-	// new MutationObserver(function(mutations, observer) {
-	// 	decorateComments()
-	// }).observe(document.body, {subtree:true, childList:true});
+
+	document.addEventListener('click', (e) => {
+		if(e.target.classList.contains('comment-actions-menu')) {
+			onActionDropdownClick(e.target)
+		}
+	})
+}
+
+function onActionDropdownClick (actionsDropdown) {
+	// get info
+	// wait for the dropdown
+	// inject the biz
+
+	const comment = (() => {
+		let parent = actionsDropdown.parentElement
+		while(
+			parent !== null &&
+			parent !== document.body &&
+			!parent.matches('.comment')
+		) {
+			parent = parent.parentElement
+		}
+		if(!parent) throw new Error('Cannot find comment element for action dropdown')
+		return parent
+	})()
+
+	// Get commentId
+	const commentAnchor = comment.querySelector('.comment-anchor').id
+	const commentId = commentAnchor.match(/comment-(\d*)/)[1]
+	if(!commentId){
+		console.error(`Could not find comment id in: "${comment.innerHTML}"`)
+		return
+	}
+
+	// Extract userId from comment
+	const profileLink = comment.querySelector('.user-head a').href
+	const commenterUserId = profileLink.match(/\/profile\/(\d*)-/)[1]
+	if(!commenterUserId){
+		console.error(`Could not find user id in comment: "${comment.innerHTML}"`)
+		return
+	}
+
+
+	const dropdownMenu = await waitForElm('.ul.dropdown-menu.tooltip.comment-actions-dropdown.active')
+
+	console.log(comment)
+}
+
+function waitForElm(selector) {
+	return new Promise(resolve => {
+		 if (document.querySelector(selector)) {
+			  return resolve(document.querySelector(selector));
+		 }
+
+		 const observer = new MutationObserver(mutations => {
+			  if (document.querySelector(selector)) {
+					resolve(document.querySelector(selector));
+					observer.disconnect();
+			  }
+		 });
+
+		 observer.observe(document.body, {
+			  childList: true,
+			  subtree: true
+		 });
+	});
 }
 
 function decorateComments() {
