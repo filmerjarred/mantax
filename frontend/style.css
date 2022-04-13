@@ -1,0 +1,59 @@
+.prediction-button-wrapper {
+	float: left;
+	margin-right: 10px
+}
+
+.vote-button, .reconcile-button{
+	background: none;
+	border:none;
+	padding:0;
+	position:relative;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.vote-button svg {
+	color:#757575;
+}
+
+/* highlight and ban proportions */
+#highlight-button {
+	width: 21px;
+	height: 16px;
+	color: #757575eb;
+	margin-top: -5px;
+}
+
+#ban-button {
+	width: 18px;
+	height: 17px;
+	margin-left: 5px;
+	margin-top: -2px;
+}
+
+/* reconcile */
+.reconcile-button {
+	width:18px;
+	height:15px;
+	margin-left:-4px
+}
+
+.big .reconcile-button {
+	width:24px;
+	height:19px;
+}
+
+/* Mechanism to highlight star */
+#highlight-button .empty-star {
+	display: block;
+}
+#highlight-button .full-star {
+	display: none;
+}
+#highlight-button.highlighted .empty-star {
+	display: none;
+}
+#highlight-button.highlighted .full-star {
+	display: block;
+	color:gold
+}

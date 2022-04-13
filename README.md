@@ -1,40 +1,21 @@
 # mantax
 
-- creates a prediction market to moderate comments by side loading a script through custom google tag manager
+Proof of concept for a prediction market to moderate comments by side loading a script through custom google tag manager
 
-- gets the substack user id + email + subscription id of current logged in user through window._preloads to create a "mantax id" which holds the predictions the logged in user makes
+WARNING: This is proof of concept code, if you want to use for your own substack do so at your own risk
 
-- we can then give each user a calibration score when looking at comments
+mvp todo
 
-routes
+- ✔ prediction buttons for banning and highlighting 
 
-	- GET /user_scores?article={article-id}
-		- Gets all the scores for all the users who comment on this article, can use cloudflare workers to cache this json
-		- And then for any users that have commented since the scores were cached, we can get the delta and re-cache it
-		- And then update the cache anytime the predictions are reconciled
+- record bans and highlights in the outcomes table
 
-	- POST /predict
-		- Takes either the mantax id of the logged in user, or enough identifying information to make them a mantax account
-		- Makes a prediction abount whether a comment will be banned
+- reconcile outcomes with predictions after 7 days has past on post
 
-	- POST /reconcile
-		- Will be a button on scotts dashboard
-		- Gives the emails and userids of the subscription list + a list of bans to mantax server, which can then reconcile all predictions and update scores
+- display leader board
 
-	- GET /user
-		- gives back their own history, along with current amount of mantax bucks they have to spend on predictions
+- admin only view of comments with high prediction variance
 
-table
 
-	users
-		mantaxid
-		substack user id
-		substack subscription id
-		user email
-		calibration_score
-		mantax_bucks
 
-	predictions
-		comment id
-		mantax id
-		direction "ban / allow"
+https://stackoverflow.com/questions/31659567/performance-of-mutationobserver-to-detect-nodes-in-entire-dom/39332340#39332340
