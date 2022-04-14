@@ -10,11 +10,13 @@ mvp todo
 
 - record bans and highlights in the outcomes table
 
-- reconcile outcomes with predictions after 7 days has past on post
+- add ability to reconcile post once highlights and bans have been given
 
-- display leader board
+- display prediction leader board
 
-- admin only view of comments with high prediction variance
+- create a admin only view of comments with high prediction variance
+
+- create a admin only view of comments that have been highlighted
 
 
 

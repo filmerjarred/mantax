@@ -64,9 +64,7 @@ async function go () {
 }
 
 async function onActionDropdownClick (actionsDropdown) {
-	// get info
-	// wait for the dropdown
-	// inject the biz
+	console.log('Dropdown clicked')
 
 	const comment = (() => {
 		let parent = actionsDropdown.parentElement
@@ -83,7 +81,7 @@ async function onActionDropdownClick (actionsDropdown) {
 
 	// Get commentId
 	const commentAnchor = comment.querySelector('.comment-anchor').id
-	const commentId = commentAnchor.match(/comment-(\d*)/)[1]
+	const commentId = parseInt(commentAnchor.match(/comment-(\d*)/)[1])
 	if(!commentId){
 		console.error(`Could not find comment id in: "${comment.innerHTML}"`)
 		return

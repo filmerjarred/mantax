@@ -9,17 +9,19 @@ todo
       - not at all
 
 mvp features
-   - record bans and highlights
+   - bugs
+      - can't always rely on window._preloads.post being present
+      - does not work https://jarredfilmer.substack.com/p/test?s=w
+
+   - note bans and highlights
       - ✔ author can mark comment as highlighted
-      - ✔ trigger process to add ban outcomes 
+      - ✔ add ban outcomes on reconcile
       - make /highlight idempotent
-      - can't rely on window._preloads post being present
 
    - reconciliation
       - ✔ reconcile route 
-      - ✔ add button to post, archive list, and front-page
-         - ✔ only show if admin
-
+      - add button post actions
+         - only show if admin
 
    - ✔ prediction buttons for banning and highlighting 
       - make prediction idempotent
@@ -29,8 +31,6 @@ mvp features
       - ✔ don't put predictions in for deleted comments 
       - error if it's too late / don't show the button
       - account for more comments loading
-
-   - back button and navigation
 
    - Make ban detection work for subscriber only posts
       - Store cookie on server?
@@ -45,6 +45,7 @@ mvp features
       - reconcile
       - highlight
       - ban
+      - predict
 
    - displaying scores
       - feedback predictions user has made
@@ -75,7 +76,7 @@ future potential features
 
    - prediction score next to commenters
 
-   - using some kind of money (real or monopoly)
+   - using some kind of money (real or monopoly) for prediction strength
 
    - add "predictions" count
 
