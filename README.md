@@ -8,7 +8,7 @@ mvp todo
 
 - ✔ prediction buttons for banning and highlighting 
 
-- record bans and highlights in the outcomes table
+- ✔ record bans and highlights in the outcomes table
 
 - add ability to reconcile post once highlights and bans have been given
 
@@ -19,5 +19,5 @@ mvp todo
 - create a admin only view of comments that have been highlighted
 
 
-
-https://stackoverflow.com/questions/31659567/performance-of-mutationobserver-to-detect-nodes-in-entire-dom/39332340#39332340
+links
+	https://stackoverflow.com/questions/31659567/performance-of-mutationobserver-to-detect-nodes-in-entire-dom/39332340#39332340

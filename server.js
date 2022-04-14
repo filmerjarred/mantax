@@ -8,6 +8,9 @@ const bodyParser = require("body-parser");
 const { createClient } = require("@supabase/supabase-js");
 const superagent = require("superagent");
 
+
+const getText = HTMLElement.prototype.
+
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
@@ -22,7 +25,7 @@ const MANTAX_COOKIE_KEY = "mantaxUserId";
 
 const blogSlug = "jarredfilmer";
 // const blogSlug = 'astralcodexten'
-
+Object.defineProperties({}, {})
 app.post("/highlight", async (req, res) => {
   try {
     const user = await getOrCreateUser(req, res);

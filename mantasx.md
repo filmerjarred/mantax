@@ -3,15 +3,11 @@ todo
    
    - get it working in cloudflare with supabase
 
-   - some kind of poll on displaying scores
-      - all
-      - only positive
-      - not at all
-
 mvp features
    - bugs
       - can't always rely on window._preloads.post being present
       - does not work https://jarredfilmer.substack.com/p/test?s=w
+      - handle people not being logged in
 
    - note bans and highlights
       - ✔ author can mark comment as highlighted
