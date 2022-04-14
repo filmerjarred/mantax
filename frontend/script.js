@@ -99,10 +99,17 @@ async function onActionDropdownClick (actionsDropdown) {
 
 	const dropdownMenu = await waitForElm('ul.dropdown-menu.tooltip.comment-actions-dropdown.active .dropdown-menu-wrapper')
 
+	if (dropdownMenu._decorated) return
+	dropdownMenu._decorated = true
+
 	// Append voting buttons to comment actions section
 	const predictHighlight = document.createElement('li')
 	dropdownMenu.appendChild(predictHighlight)
 	predictHighlight.innerHTML = predictHighlightHTML
+
+	const predictBan = document.createElement('li')
+	dropdownMenu.appendChild(predictBan)
+	predictBan.innerHTML = predictBanHTML
 		
 	const existingPrediction = mantaxData.predictions.find(p => p.substackCommentId === commentId)
 	if (existingPrediction) {
@@ -115,8 +122,7 @@ async function onActionDropdownClick (actionsDropdown) {
 		} else {
 			predictHighlight.addEventListener('click', () => makePrediction({predictedOutcome:'highlight', commentId, commenterUserId}))
 			
-			// const banButton = commentRest.querySelector('#ban-button')
-			// banButton.addEventListener('click', () => makePrediction({predictedOutcome:'ban', commentId, commenterUserId}))
+			predictBan.addEventListener('click', () => makePrediction({predictedOutcome:'ban', commentId, commenterUserId}))
 		}
 	}
 }
